@@ -72,7 +72,6 @@ function createGalleryItemMarkUp(images) {
 		const link = document.createElement('a');
 		link.classList.add('gallery__link');
 		link.href = original;
-		link.download = '';
 
 		const image = document.createElement('img');
 		image.classList.add('gallery__image');
@@ -95,17 +94,22 @@ galleryItemsUl.append(...itemsMarkUp);
 // клік
 galleryItemsUl.addEventListener('click', e => {
 	e.preventDefault();
-	if (e.target !== e.currentTarget) {
+
+	if (e.target.classList.contains('gallery__image')) {
 		const imageUrl = e.target.dataset.source;
 		const instance = basicLightbox.create(
-			`<div class="imgFullWidthBg"><img class="imgFullWidth" src='${imageUrl}'></div>`
+			`<div class="imgFullWidthBg"><img class="imgFullWidth" src='${imageUrl}'></div>`,
+			{
+				onShow: () => window.addEventListener('keydown', onKeydown),
+				onClose: () => window.removeEventListener('keydown', onKeydown),
+			}
 		);
 		instance.show();
 
-		window.addEventListener('keydown', e => {
+		function onKeydown(e) {
 			if (e.code === 'Escape') {
 				instance.close();
 			}
-		});
+		}
 	}
 });
